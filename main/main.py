@@ -10,25 +10,25 @@ import sys
 from arg_parse import get_args
 args = get_args(); print('#', args)
 
-## Structure_generation module##
-from PANDORA.PMHC import PMHC
-from PANDORA.Pandora import Pandora
+### Policy module ###
+from Policy import calculate_similarity, one_hot_encoding
+
+## Structure_generation module ###
 from PANDORA.Database import Database
-from PANDORA.Wrapper import Wrapper
 from Structure_generation import predict_structure
 
 ###Loss module####
-import new_loss as zgq_loss
+from Loss import compute_loss
 
-
-
+###Additional part###
+from addition_func import get_freq, normalize, extract_pdbfile
 
 # Generate target directory
 if not os.path.exists(args.o):
     os.makedirs(args.o)    
 
 
-######amino acid frequency########
+###### Global Parameters
 AA_freq = {'A': 0.07421620506799341,
  'R': 0.05161448614128464,
  'N': 0.044645808512757915,
@@ -95,8 +95,7 @@ def main():
     if args.start_fre == None:
         print('It consists of two parts, one is BLOSUM62, whose weight is {}. The other is IEDB, whose weight is {}'.format(w_blosum, w_iedb), file = logfile)
     print('='*70, file = logfile)
-    
-    #####Establish the structure#####
+
 
     #the peptide
     pep = peptide(length = args.l, aa_freq_mat = AA_freq_mat)
@@ -421,200 +420,7 @@ class peptide():
    #             print(self.freq,"n"*70)
         #self.freq = normalize(self.freq, args.l)
         ###### IMPORTANT!! here is no Normalization!!!!!!!!###
-        
-def get_freq(direction, filename,length):
-#    test0 = 0
-#    test = 0
-    num_pep = 0
-    pos = np.zeros((20,length)) ##line --> 20aa, column --> position
-    dictionary = dict(zip(AA_freq.keys(), np.linspace(0,19,20,dtype = int)))
-    with open(os.path.join(direction, filename), 'r') as f:
-        norm = True # justify if the sequence is normal (length is 9, all aa in the dictionary)
-        for line in f:
-#            test0 += 1
-            line = line.replace('\n','')
-            line = line.replace(' ','')
-#            if len(line) == 9:
-#               test += 1
-            if len(line) == length and line.isupper() == True:
-                for i in range(length):
-                    if line[i] in dictionary.keys():
-                        norm = True
-                        continue
-                    else:
-                        norm = False
-                        break
-                if norm == True:
-                    num_pep += 1
-                    for i in range(length):
-                        nrow = dictionary[line[i]]
-                        pos[nrow][i] += 1 
-                else:
-                    continue
-#    print(test0, test)
-    return normalize(pos,length), num_pep
 
-
-                
-    
-    
-
-def compute_loss(iedb_freqmat, out_filename, pep_seq, logfile, w1 = 10, w2 = -0.1, w3 = None, w4 = args.weight_iedb):
-    
-    #direction = args.o + '/' + out_filename + '_' +structure
-    
-    if '_NUM' not in out_filename:
-        direction = os.path.join(args.o, [i for i in os.listdir(args.o) if out_filename in i][0])
-    else:
-        tsvname = out_filename.split('_NUM')[0]
-        dir_base = os.path.join(args.o, tsvname)
-        direction = os.path.join(dir_base, [i for i in os.listdir(dir_base) if out_filename in i][0])
-    
-    filename = os.path.join(direction,'molpdf_DOPE.tsv')
-    #f = pd.read_csv(filename, sep='\t', header=None)
-    with open(filename, 'r') as f:
-        for line in f:
-            ff = line.split()
-            best_molpdf = float(ff[1])
-            best_DOPE = float(ff[2])
-            break
-    #best_molpdf = f.values[0][1]
-    #best_DOPE = f.values[0][2]
-    
-    if args.cdr_sequence == None:
-        w3 = args.weight_cdr_dis
-    else:
-        w3 = args.weight_cdr
-    
-    cdr_loss = zgq_loss.pep_TCR_loss(pep_seq = pep_seq, cdr_seq = args.cdr_sequence, TCRpos = args.TCR_loss_pos)
-    iedb_loss = zgq_loss.IEDB_loss(iedb_freqmat, pep_seq)
-    
-    onemol_loss0 = w1 * best_molpdf + w2 * best_DOPE
-    if onemol_loss0 < -200 and onemol_loss0 > -500:
-        w_one = 3
-    else:
-        if onemol_loss0 > 0:
-            w_one = 10
-        elif onemol_loss0 >-200:
-            w_one = 2.5
-        else:
-            w_one = 0.5
-    onemol_loss = w_one * onemol_loss0
-    
-    print('', file = logfile)
-    print('LOSS RESULTS of the {}:'.format(pep_seq), file = logfile)
-    print('****modeller loss --> {} * {} = {}'.format(w_one, onemol_loss0, onemol_loss), file = logfile)
-    if args.cdr_sequence == None:
-        print('****cdr loss --> {} given no cdr'.format(w3 * cdr_loss), file = logfile)
-    else:
-        print('****cdr loss --> {} with cdr sequence as {}'.format(w3 * cdr_loss, args.cdr_sequence), file = logfile)
-    print('****iedb loss --> {}'.format(w4 * iedb_loss), file = logfile)
-    
-    
-    return onemol_loss + w3 * cdr_loss + w4 * iedb_loss #DOPE is negative, thus w2 should be negative
-
-def normalize(freq_mat, length):
-    #freq_mat: (aa_type, length)
-    for i in range(length):
-        loc_sum = np.sum(freq_mat[:,i])
-        for j in range(20):
-            freq_mat[j,i] = freq_mat[j,i] / loc_sum
-    return freq_mat
-
-
-
-
-
-
-
-def extract_pdbfile(out_filename, loss):
-    #direction = args.o + '/' + out_filename + '_' +structure
-    #direction = os.path.join(args.o, [i for i in os.listdir(args.o) if out_filename in i][0])
-    if '_NUM' not in out_filename:
-        direction = os.path.join(args.o, [i for i in os.listdir(args.o) if out_filename in i][0])
-    else:
-        tsvname = out_filename.split('_NUM')[0]
-        dir_base = os.path.join(args.o, tsvname)
-        direction = os.path.join(dir_base, [i for i in os.listdir(dir_base) if out_filename in i][0])
-    
-    filename = os.path.join(direction,'molpdf_DOPE.tsv')
-    #f = pd.read_csv(filename, sep='\t', header=None)
-    with open(filename, 'r') as f:
-        for line in f:
-            ff = line.split()
-            pdbfile = ff[0]
-            break
-    #pdbfile = f.values[0][0]
-    pdbdir = os.path.join(args.o, 'LOSS')
-    if not os.path.exists(pdbdir):
-        os.makedirs(pdbdir) 
-    pdbfilename = os.path.join(pdbdir, 'loss{}_{}'.format(loss, pdbfile))
-    
-    oldpath = os.getcwd()
-    os.chdir(direction)
-    os.system('cp {} {}'.format(pdbfile, pdbfilename))
-    os.chdir(oldpath)
-
-def cosine_similarity(a, b):
-    """
-    Calculates the cosine similarity between matrix 'a' and each matrix in 'B'.
-
-    Args:
-        a (array-like): Matrix 'a'.
-        b (array-like): Matrix 'b'.
-
-    Returns:
-        similarities (list): List of cosine similarity values.
-    """
-    
-    dot_product = np.sum(a * b)
-    norm_a = np.linalg.norm(a)
-    norm_b = np.linalg.norm(b)
-    similarity = dot_product / (norm_a * norm_b)
-    return similarity
-
-def calculate_similarity(new_peptide, databank_file):
-    """
-    Calculates the cosine similarity between 'new_peptide' and each sequence in 'databank_file'.
-
-    Args:
-        new_peptide (array-like): One-hot matrix representing the new peptide sequence.
-        databank_file (str): File name of the databank containing peptide sequences.
-
-    Returns:
-        similarities (list): List of cosine similarity values.
-    """
-    similarities = []
-    with open(databank_file, 'r') as f:
-        databank = f.read().splitlines()
-        for sequence in databank:
-            sequence_matrix = one_hot_encoding(sequence)
-            similarity = cosine_similarity(new_peptide, sequence_matrix)
-            similarities.append(similarity)
-    return similarities
-
-def one_hot_encoding(sequence, position = args.TCR_loss_pos):
-    """
-    Converts a peptide sequence into a one-hot matrix.
-
-    Args:
-        sequence (str): Peptide sequence.
-        position (str): TCR_loss_positions, should be the same as the TCR_loss_pos
-
-    Returns:
-        matrix (numpy array): One-hot matrix representation of the sequence.
-    """
-    start = int(position.split('_')[0])
-    end = int(position.split('_')[-1])
-    amino_acids = "ARNDCQEGHILKMFPSTWYV"
-    num_positions = len(sequence)
-    num_amino_acids = len(amino_acids)
-    matrix = np.zeros((num_positions, num_amino_acids))
-    for i, char in enumerate(sequence):
-        if char in amino_acids:
-            j = amino_acids.index(char)
-            matrix[i, j] = 1
-    return matrix[start - 1 : end]
 
 
 if __name__ == '__main__':
