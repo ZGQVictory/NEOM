@@ -53,7 +53,21 @@ def get_args():
                 type=str,
                 help='your output direction'
                 )
-
+    parser.add_argument(
+                '--total_structures',
+                action='store_true',
+                help='if you want to save all the files especially the PANDORA results, use --total_structures.'
+                )
+    parser.add_argument(
+                '--verbose',
+                action='store_true',
+                help='if you want to see more details in the Details file, use --verbose.'
+                )
+    parser.add_argument(
+                '--extract_pdbfile',
+                action='store_true',
+                help='if you want to extract pdbfile to a LOSS directory, use --extract_pdbfile.'
+                )
     #MCMC arguments
     parser.add_argument(
                 '--tolerance',
@@ -89,7 +103,7 @@ def get_args():
     parser.add_argument(
                 '--metropolis_hasting',
                 action='store_true',
-                help='if you want to use the Metropolis Hasting algorithm, remeber to check the reference probability in tcr-specific--peptide.txt, using --metropolis_hasting.'
+                help='if you want to use the Metropolis Hasting algorithm, remeber to check the reference probability in tcr-specific--peptide.txt, use --metropolis_hasting.'
                 )
 
     parser.add_argument(
@@ -175,6 +189,17 @@ def get_args():
                 default = 50,
                 type = float,
                 help='the weight of iedb discrete loss, DEFAULT = %(default)s.'
+                )
+    ## Other parts
+    parser.add_argument(
+                '--nomemory',
+                action='store_true',
+                help='if you want to try this process with a changing frequency but no memory, use --freqnotchange.'
+                )
+    parser.add_argument(
+                '--freqnotchange',
+                action='store_true',
+                help='if you want to try this process with a fixed frequency, use --freqnotchange.'
                 )
     
     args = parser.parse_args()
