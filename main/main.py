@@ -77,7 +77,7 @@ def main():
     # Initialize the peptide object
     pep = peptide(length=args.l, aa_freq_mat=AA_freq_mat)
     # PANDORA Init 
-    db = Database.load('/home/zgq/data/pmhc/pandora/pandora_Database.pkl') ###Change 3###
+    db = Database.load('/home/zgq/data/pmhc/pandora/pandora_Database.pkl') ###change 3###
     
     ## Simulated Annealing part##
     Simulated_Annealing(args, pep, db, iedb_freqmat, prob_ref_freqmat, logfilename, freqmatfilename)
