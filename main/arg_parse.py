@@ -194,7 +194,7 @@ def get_args():
     parser.add_argument(
                 '--nomemory',
                 action='store_true',
-                help='if you want to try this process with a changing frequency but no memory, use --freqnotchange.'
+                help='if you want to try this process with a changing frequency but no memory, use --nomemory.'
                 )
     parser.add_argument(
                 '--freqnotchange',
