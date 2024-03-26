@@ -53,4 +53,11 @@ EvaST requires [PANDORA](https://github.com/X-lab-3D/PANDORA/), python and some 
 
     Clone the repository:
    ```bash
-   
+   git clone https://github.com/ZGQVictory/EvaST.git
+   cd EvaST
+   ```
+
+---
+# Code Outline
+
+
