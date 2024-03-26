@@ -60,7 +60,7 @@ EvaST requires [PANDORA](https://github.com/X-lab-3D/PANDORA/), python and some 
 # Command options
 
 ```python
-python main.p -h
+python main.py -h
 ```
 
 You will see a bunch of options:
