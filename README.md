@@ -97,6 +97,24 @@ You will see a bunch of options. Below are the details of each argument that can
 - `--nomemory`: To try this process with a changing frequency but no memory.
 - `--freqnotchange`: To try this process with a fixed frequency.
 
+---
+# Test
+
+Test example, 
+1. run 1000 steps maturation from 'VMNILLQYV' with 12 cpu cores (--steps 1000, -start_pep VMNILLQYV, --num_cores 12)
+2. mutate 10 times in one step (--mutant_times 10)
+3. set starting temperature to be 100 (to change the acceptance rate, --T_init 100)
+4. exert the TCR loss on the peptide position 3~8 (--TCR_loss_pos 3_4_5_6_7_8)
+5. extract the pdb files that PANDORA generated (--extract_pdbfile)
+6. add the booster for the mutations (--add_booster)
+7. set the output directory (-o './output_data')
+
+then run the following command:
+
+```python
+python ./code/main.py --steps 1000  -start_pep VMNILLQYV --mutant_times 10  --T_init 100  --TCR_loss_pos 3_4_5_6_7_8  --extract_pdbfile --add_booster -o './output_data'
+```
+
 
 
 
