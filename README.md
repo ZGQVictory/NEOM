@@ -111,7 +111,7 @@ Test example,
 
 then run the following command:
 
-```python
+```bash
 python ./code/main.py --steps 1000  -start_pep VMNILLQYV --mutant_times 10  --T_init 100  --TCR_loss_pos 3_4_5_6_7_8  --extract_pdbfile --add_booster -o './output_data'
 ```
 
