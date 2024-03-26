@@ -57,7 +57,5 @@ EvaST requires [PANDORA](https://github.com/X-lab-3D/PANDORA/), python and some 
    cd EvaST
    ```
 
----
-# Code Outline
-
+# Command options
 
