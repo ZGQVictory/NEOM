@@ -46,7 +46,7 @@ AA_freq = {'A': 0.07421620506799341,
 dir_tcr = '../data/pmhc/' ###change 1###
 file_tcr = 'tcr-specific--peptide.txt'
 # IEDB——HLA0201-Database
-dir_iedb = '../data/pmhc'  ###Change 2###
+dir_iedb = '../data/pmhc/'  ###Change 2###
 file_iedb = 'pHLA-A0201--peptide.txt'
 # PANDORA Init
 ###Change 3 in the main function###
