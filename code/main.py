@@ -43,10 +43,10 @@ AA_freq = {'A': 0.07421620506799341,
  'V': 0.07291909820561925}
 
 ########### Changing Part ##############################
-dir_tcr = '/public/home/zhangguanqiao/data/pmhc/' ###change 1###
+dir_tcr = '../data/pmhc/' ###change 1###
 file_tcr = 'tcr-specific--peptide.txt'
 # IEDB——HLA0201-Database
-dir_iedb = '/public/home/zhangguanqiao/data/pmhc'  ###Change 2###
+dir_iedb = '../data/pmhc'  ###Change 2###
 file_iedb = 'pHLA-A0201--peptide.txt'
 # PANDORA Init
 ###Change 3 in the main function###
@@ -77,7 +77,7 @@ def main():
     # Initialize the peptide object
     pep = peptide(length=args.l, aa_freq_mat=AA_freq_mat)
     # PANDORA Init 
-    db = Database.load('/public/home/zhangguanqiao/data/pmhc/pandora_Database.pkl') ###Change 3###
+    db = Database.load('../data/pmhc/pandora_Database.pkl') ###Change 3###
     
     ## Simulated Annealing part##
     Simulated_Annealing(args, pep, db, iedb_freqmat, prob_ref_freqmat, logfilename, freqmatfilename)
