@@ -109,13 +109,19 @@ Test example,
 6. add the booster for the mutations (--add_booster)
 7. set the output directory (-o './output_data')
 
-then run the following command:
+then run the following command to generate an Expanded peptide pool:
 
 ```bash
 python ./code/main.py --steps 1000  -start_pep VMNILLQYV --mutant_times 10  --T_init 100  --TCR_loss_pos 3_4_5_6_7_8  --extract_pdbfile --add_booster -o './output_data'
 ```
 
+# Filter Options
 
+1. [NetMHC-4.0](https://services.healthtech.dtu.dk/services/NetMHC-4.0/)
+2. [IEDB-Consensus](https://nextgen-tools.iedb.org/pipeline)
+3. [Episcan predictor](https://www.episcan-predictor.com)
+4. Free Energy Perturbation
+5. Stability MD validation
 
 
 
