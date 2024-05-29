@@ -26,6 +26,8 @@ EvaST requires [PANDORA](https://github.com/X-lab-3D/PANDORA/), python and some 
 
       In this paper, we use PANDORA-v1.0.0. You should follow the [ReadME.md](https://github.com/X-lab-3D/PANDORA/blob/master/README.md) step by step.
 
+      When constructing the PANDORA database, it's better to set its directory in the './data/pmhc/', which means that there will be a 'pandora_Database.pkl' in the './data/pmhc/'. Or, change the PANDORA database directory in the './code/main.py' to fit your directory. (In the main.py, I highlighted three places that you can change.)
+
       After PANDORA installation, please use python to make a validation:
 
       ```python
@@ -49,7 +51,7 @@ EvaST requires [PANDORA](https://github.com/X-lab-3D/PANDORA/), python and some 
 
       ```
 
-3. Install EvaST
+4. Install EvaST
 
     Clone the repository:
    ```bash
