@@ -1,6 +1,6 @@
-# EvaST
+# NEOM
 
-EvaST is a novel neoantigen maturation framework encompassing five distinct modules: “policy”, “structure”, “evaluation”, “selection” and “filter”. 
+NEOM is a novel neoantigen maturation framework encompassing five distinct modules: “policy”, “structure”, “evaluation”, “selection” and “filter”. 
 
 It is Flexible, Interpretable, Precise and Fast.
 
@@ -9,7 +9,7 @@ Hope you enjoy it.
 ---
 # Requirements
 
-EvaST requires [PANDORA](https://github.com/X-lab-3D/PANDORA/), python and some python libraries. The following installations are required before EvaST installation:
+NEOM requires [PANDORA](https://github.com/X-lab-3D/PANDORA/), python and some python libraries. The following installations are required before NEOM installation:
 
 * Python >=3.7
 * conda
@@ -18,8 +18,8 @@ EvaST requires [PANDORA](https://github.com/X-lab-3D/PANDORA/), python and some 
 1. Generate the environment
 
       ```bash
-      conda env create -n EvaST python=3.9
-      conda activate EvaST
+      conda env create -n NEOM python=3.9
+      conda activate NEOM
       ```
 
 2. Install the [PANDORA](https://github.com/X-lab-3D/PANDORA/)
@@ -51,12 +51,12 @@ EvaST requires [PANDORA](https://github.com/X-lab-3D/PANDORA/), python and some 
 
       ```
 
-4. Install EvaST
+4. Install NEOM
 
     Clone the repository:
    ```bash
-   git clone https://github.com/ZGQVictory/EvaST.git
-   cd EvaST
+   git clone https://github.com/ZGQVictory/NEOM.git
+   cd NEOM
    ```
 
 # Command options
