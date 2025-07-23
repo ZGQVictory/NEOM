@@ -1,130 +1,206 @@
 # NEOM
 
-NEOM is a novel neoantigen maturation framework encompassing five distinct modules: “policy”, “structure”, “evaluation”, “selection” and “filter”. 
+NEOM is a neoantigen maturation framework with five key modules: **policy · structure · evaluation · selection · filter**.  
+We now provide **two runnable implementations**:
 
-It is Flexible, Interpretable, Precise and Fast.
+- **Part 1 – Structure-driven version (root `main.py`)**  
+  Original pipeline that relies on structural modeling (PANDORA required).
 
-Hope you enjoy it.
+- **Part 2 – Neural-network version (`NeuralNetwork-code/main.py`)**  
+  End-to-end learning pipeline **without PANDORA**.  
+  **Recommended** for quick use and less setup time.
 
 ---
-# Requirements
 
-NEOM requires [PANDORA](https://github.com/X-lab-3D/PANDORA/), python and some python libraries. The following installations are required before NEOM installation:
+## Table of Contents
 
-* Python >=3.7
-* conda
-* pip3
+- [NEOM](#neom)
+  - [Table of Contents](#table-of-contents)
+  - [Repository Layout](#repository-layout)
+  - [Environment Setup](#environment-setup)
+    - [Create Conda env (example)](#create-conda-env-example)
+    - [PANDORA (Only for Part 1)](#pandora-only-for-part-1)
+  - [Part 1: Structure-driven NEOM (root `main.py`)](#part-1-structure-driven-neom-root-mainpy)
+  - [Part 2: Neural-network NEOM (`NeuralNetwork-code/main.py`)](#part-2-neural-network-neom-neuralnetwork-codemainpy)
+  - [Post-processing Logs](#post-processing-logs)
+  - [Filtering \& Downstream Tools](#filtering--downstream-tools)
+  - [Citation \& License](#citation--license)
 
-1. Generate the environment
+---
 
-      ```bash
-      conda env create -n NEOM python=3.9
-      conda activate NEOM
-      ```
+## Repository Layout
 
-2. Install the [PANDORA](https://github.com/X-lab-3D/PANDORA/)
-
-      In this paper, we use PANDORA-v1.0.0. You should follow the [ReadME.md](https://github.com/X-lab-3D/PANDORA/blob/master/README.md) step by step.
-
-      When constructing the PANDORA database, it's better to set its directory in the './data/pmhc/', which means that there will be a 'pandora_Database.pkl' in the './data/pmhc/'. Or, change the PANDORA database directory in the './code/main.py' to fit your directory. (In the main.py, find the '###Change 3###' to replace the directory.)
-
-      After PANDORA installation, please use python to make a validation:
-
-      ```python
-      ## import requested modules
-      from PANDORA import Target
-      from PANDORA import Pandora
-      from PANDORA import Database
-      
-      ## A. Load local Database
-      db = Database.load()
-      
-      ## B. Create Target object
-      target = Target(id = 'myTestCase',
-          allele_type = 'HLA-A*0201',
-          peptide = 'LLFGYPVYV',
-          anchors = [2,9])
-      
-      ## C. Perform modelling
-      case = Pandora.Pandora(target, db)
-      case.model()
-
-      ```
-
-4. Install NEOM
-
-    Clone the repository:
-   ```bash
-   git clone https://github.com/ZGQVictory/NEOM.git
-   cd NEOM
-   ```
-
-# Command options
-
-```python
-python main.py -h
 ```
 
-You will see a bunch of options. Below are the details of each argument that can be used:
+NEOM/
+├── analyse\_script/                 # (optional) analysis helpers
+├── data/
+├── example/
+│   ├── random\_Details\_logfile.txt
+│   ├── random\_Details\_logfile\_step\_loss.log
+│   ├── random\_Details\_logfile\_step\_loss\_accept.log
+│   └── random\_Frequencymap.txt
+├── NeuralNetwork-code/
+│   ├── database/                   # NN-specific resources
+│   ├── datanet/
+│   ├── example/
+│   ├── Training\_scripts/
+│   ├── environment.yml
+│   ├── main.py                     # NN version entry point
+│   └── ...
+├── addition\_func.py
+├── arg\_parse.py
+├── Loss.py
+├── main.py                         # structure version entry point
+├── new\_loss.py
+├── Policy.py
+├── process.py
+├── Structure\_generation.py
+└── README.md
 
-- `-h, --help`: Show this help message and exit.
-- `-l L`: The length of the peptide. **DEFAULT = 9**.
-- `-mhc MHC`: The MHC type. **DEFAULT = HLA-A*0201**.
-- `-start_pep START_PEP`: Indicates we generate peptide using our start frequency. If you want a specific start point, please enter it here. **DEFAULT = None**.
-- `-start_fre START_FRE`: We generate peptide using our default frequency (IEDB+BLOSUM). To specify another frequency, enter 1 in the argument and put the frequency matrix in `process.py`. **DEFAULT = None**.
-- `-frequency_weight FREQUENCY_WEIGHT`: Our default start frequency map consists of two parts, 1:BLOSUM62, 2:IEDB_0201, with default weights of [1,1]. **DEFAULT = 1_1**.
-- `-rest_mut_pos REST_MUT_POS`: Select specific positions of the neo-antigen, especially the hydrophobic residues in the middle, to maintain hydrophobicity. Example: 3_5_7. **DEFAULT = None**.
-- `-fre_mut_pos FRE_MUT_POS`: Select the position you want to mutate using our frequency matrix. **DEFAULT = 1_2_3_4_5_6_7_8_9**.
-- `-o O`: Your output direction. **DEFAULT = ./**.
-- `--total_structures`: To save all files, especially the PANDORA results. 
-- `--verbose`: For more details in the Details file.
-- `--extract_pdbfile`: To extract pdbfile to a LOSS directory.
-- `--tolerance TOLERANCE`: The tolerance on the loss sliding window for terminating the MCMC trajectory early. **DEFAULT = None**.
-- `-mutation_rate MUTATION_RATE`: Number of mutations at each MCMC step (start-finish, stepped linear decay), likely scaled with protomer length. **DEFAULT = 3-1**.
-- `--T_init T_INIT`: Starting temperature for simulated annealing, decayed exponentially. **DEFAULT = 25**.
-- `--half_life HALF_LIFE`: Half-life for temperature decay during simulated annealing. **DEFAULT = 1000**.
-- `--metropolis_hasting`: Use the Metropolis Hasting algorithm, checking the reference probability in tcr-specific--peptide.txt.
-- `--steps STEPS`: Number of steps for the MCMC trajectory. **DEFAULT = 10**.
-- `--add_booster`: To use the booster generating peptides similar to the TCR file, checking tcr-specific--peptide.txt.
-- `--booster_num BOOSTER_NUM`: The position number to keep as one sequence of the TCR file. **DEFAULT = 3**.
-- `--frequence_change_rate FREQUENCE_CHANGE_RATE`: Rate of change for the frequency matrix. **DEFAULT = 0.3**.
-- `--mutant_times MUTANT_TIMES`: Mutation times in one step. **DEFAULT = 10**.
-- `--step_model_num STEP_MODEL_NUM`: Number of PANDORA models in one step. **DEFAULT = 5**.
-- `--num_cores NUM_CORES`: Number of CPUs to use, see data using `lscpu`. **DEFAULT = 16**.
-- `--TCR_loss_pos TCR_LOSS_POS`: Exert the TCR_loss on specific positions. **DEFAULT = 1_2_3_4_5_6_7_8_9**.
-- `--cdr_sequence CDR_SEQUENCE`: Specify the cdr loop sequence in the new loss, e.g., extracted from 5NMG. **DEFAULT = None**.
-- `--weight_cdr_dis WEIGHT_CDR_DIS`: The weight of cdr discrete loss. **DEFAULT = 100**.
-- `--weight_cdr WEIGHT_CDR`: The weight of cdr loss, needing a sequence. **DEFAULT = 2**.
-- `--weight_iedb WEIGHT_IEDB`: The weight of iedb discrete loss. **DEFAULT = 50**.
-- `--nomemory`: To try this process with a changing frequency but no memory.
-- `--freqnotchange`: To try this process with a fixed frequency.
+````
 
 ---
-# Test
 
-Test example, 
-1. run 1000 steps maturation from 'VMNILLQYV' with 12 cpu cores (--steps 1000, -start_pep VMNILLQYV, --num_cores 12)
-2. mutate 10 times in one step (--mutant_times 10)
-3. set starting temperature to be 100 (to change the acceptance rate, --T_init 100)
-4. exert the TCR loss on the peptide position 3~8 (--TCR_loss_pos 3_4_5_6_7_8)
-5. extract the pdb files that PANDORA generated (--extract_pdbfile)
-6. add the booster for the mutations (--add_booster)
-7. set the output directory (-o './output_data')
+## Environment Setup
 
-then run the following command to generate an Expanded peptide pool:
+> If you only plan to run the **Neural-network version**, you can skip PANDORA completely.
+
+### Create Conda env (example)
 
 ```bash
-python ./code/main.py --steps 1000  -start_pep VMNILLQYV --mutant_times 10  --T_init 100  --TCR_loss_pos 3_4_5_6_7_8  --extract_pdbfile --add_booster -o './output_data'
+conda env create -n NEOM python=3.9
+conda activate NEOM
+````
+
+(Or adapt from your own `environment.yml` if provided.)
+
+### PANDORA (Only for Part 1)
+
+Follow PANDORA’s README: [https://github.com/X-lab-3D/PANDORA](https://github.com/X-lab-3D/PANDORA) (paper used v1.0.0).
+Place `pandora_Database.pkl` under `./data/pmhc/` **or** adjust the path in `main.py` (`###Change 3###`).
+
+Quick validation after installing PANDORA:
+
+```python
+from PANDORA import Target, Pandora, Database
+db = Database.load()
+target = Target(id='myTestCase', allele_type='HLA-A*0201',
+                peptide='LLFGYPVYV', anchors=[2,9])
+case = Pandora.Pandora(target, db)
+case.model()
 ```
 
-# Filter Options
+---
 
-1. [NetMHC-4.0](https://services.healthtech.dtu.dk/services/NetMHC-4.0/)
-2. [IEDB-Consensus](https://nextgen-tools.iedb.org/pipeline)
-3. [Episcan predictor](https://www.episcan-predictor.com)
-4. Free Energy Perturbation
-5. Stability MD validation
+## Part 1: Structure-driven NEOM (root `main.py`)
 
+Run:
 
+```bash
+python main.py [options]
+```
+
+Common arguments (subset):
+
+| Arg                  | Meaning                           | Default                   |
+| -------------------- | --------------------------------- | ------------------------- |
+| `-l`                 | peptide length                    | 9                         |
+| `-mhc`               | MHC type                          | HLA-A\*0201               |
+| `-start_pep`         | start peptide sequence            | None                      |
+| `-start_fre`         | use custom start frequency        | None                      |
+| `-frequency_weight`  | weights for BLOSUM62 & IEDB\_0201 | 1\_1                      |
+| `-rest_mut_pos`      | positions to keep hydrophobic     | None                      |
+| `-fre_mut_pos`       | positions allowed to mutate       | 1\_2\_3\_4\_5\_6\_7\_8\_9 |
+| `-o`                 | output directory                  | ./                        |
+| `--total_structures` | save all (esp. PANDORA outputs)   | False                     |
+| `--extract_pdbfile`  | dump PDBs to LOSS dir             | False                     |
+| `--steps`            | MCMC steps                        | 10                        |
+| `-mutation_rate`     | per-step mutations (e.g. `3-1`)   | 3-1                       |
+| `--T_init`           | initial temperature               | 25                        |
+| `--half_life`        | temp half-life                    | 1000                      |
+| `--mutant_times`     | mutations per step                | 10                        |
+| `--num_cores`        | CPU cores                         | 16                        |
+| `--TCR_loss_pos`     | positions for TCR loss            | 1\_2\_3\_4\_5\_6\_7\_8\_9 |
+| `--add_booster`      | booster mode                      | False                     |
+
+**Example** (1000 steps from `VMNILLQYV`, 12 CPUs, save PDB, add booster, etc.):
+
+```bash
+python main.py --steps 1000 -start_pep VMNILLQYV \
+  --mutant_times 10 --T_init 100 --TCR_loss_pos 3_4_5_6_7_8 \
+  --extract_pdbfile --add_booster -o ./output_data --num_cores 12
+```
+
+---
+
+## Part 2: Neural-network NEOM (`NeuralNetwork-code/main.py`)
+
+> **No PANDORA needed.** This version is faster to set up.
+
+1. Enter the folder:
+
+   ```bash
+   cd NeuralNetwork-code
+   ```
+
+2. (Optional) build env from its `environment.yml`:
+
+   ```bash
+   conda env create -f environment.yml -n NEOM_NN
+   conda activate NEOM_NN
+   ```
+
+3. Run:
+
+   ```bash
+   python main.py [options]
+   ```
+
+Parameters are analogous but specific to the NN pipeline (see `arg_parse.py` inside this folder). Adjust dataset / database paths as needed under `database/`, `datanet/`, etc.
+
+---
+
+## Post-processing Logs
+
+After **either** version finishes:
+
+```bash
+
+cp analyse_script/ extract_step_loss_sequence.py .
+python extract_step_loss_sequence.py ./example random_Details_logfile.txt
+```
+
+This generates:
+
+* `random_Details_logfile_step_loss.log`
+* `random_Details_logfile_step_loss_accept.log`  ← **all accepted peptides**
+
+Both appear under `./example/` by default (change path if needed).
+
+---
+
+## Filtering & Downstream Tools
+
+To further prioritize binders/immunogenic peptides, you may use:
+
+1. NetMHC-4.0
+2. IEDB Consensus
+3. Episcan Predictor
+
+(Links can be found in the original README; keep them in your workflow as needed.)
+
+---
+
+## Citation & License
+
+If you use NEOM in academic work, please cite our paper.
+https://www.biorxiv.org/content/10.1101/2024.08.14.607669v1
+
+---
+
+**Tip:** Prefer the **Neural-network version** for a quicker start, then switch to the structure-driven version if you need explicit structural modeling and interpretability.
+
+Enjoy!
 
 

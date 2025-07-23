@@ -49,7 +49,7 @@ def get_args():
                 )
     parser.add_argument(
                 '-o',
-                default='./',
+                default='./example',
                 type=str,
                 help='Your output direction, DEFAULT = %(default)s.'
                 )
