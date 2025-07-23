@@ -33,29 +33,29 @@ We now provide **two runnable implementations**:
 ```
 
 NEOM/
-├── analyse\_script/                 # (optional) analysis helpers
+├── analyse_script/                 # (optional) analysis helpers
 ├── data/
 ├── example/
-│   ├── random\_Details\_logfile.txt
-│   ├── random\_Details\_logfile\_step\_loss.log
-│   ├── random\_Details\_logfile\_step\_loss\_accept.log
-│   └── random\_Frequencymap.txt
+│   ├── random_Details_logfile.txt
+│   ├── random_Details_logfile_step_loss.log
+│   ├── random_Details_logfile_step_loss_accept.log
+│   └── random_Frequencymap.txt
 ├── NeuralNetwork-code/
 │   ├── database/                   # NN-specific resources
 │   ├── datanet/
 │   ├── example/
-│   ├── Training\_scripts/
+│   ├── Training_scripts/
 │   ├── environment.yml
 │   ├── main.py                     # NN version entry point
 │   └── ...
-├── addition\_func.py
-├── arg\_parse.py
+├── addition_func.py
+├── arg_parse.py
 ├── Loss.py
 ├── main.py                         # structure version entry point
-├── new\_loss.py
+├── new_loss.py
 ├── Policy.py
 ├── process.py
-├── Structure\_generation.py
+├── Structure_generation.py
 └── README.md
 
 ````
