@@ -20,11 +20,11 @@ We now provide **two runnable implementations**:
   - [Environment Setup](#environment-setup)
     - [Create Conda env (example)](#create-conda-env-example)
     - [PANDORA (Only for Part 1)](#pandora-only-for-part-1)
-  - [Part 1: Structure-driven NEOM (root `main.py`)](#part-1-structure-driven-neom-root-mainpy)
-  - [Part 2: Neural-network NEOM (`NeuralNetwork-code/main.py`)](#part-2-neural-network-neom-neuralnetwork-codemainpy)
+  - [Part 1: Structure-driven NEOM (`./main.py`)](#part-1-structure-driven-neom-root-mainpy)
+  - [Part 2: Neural-network NEOM (`./NeuralNetwork-code/main.py`)](#part-2-neural-network-neom-neuralnetwork-codemainpy)
   - [Post-processing Logs](#post-processing-logs)
   - [Filtering \& Downstream Tools](#filtering--downstream-tools)
-  - [Citation \& License](#citation--license)
+  - [Citation](#citation)
 
 ---
 
@@ -192,7 +192,7 @@ To further prioritize binders/immunogenic peptides, you may use:
 
 ---
 
-## Citation & License
+## Citation
 
 If you use NEOM in academic work, please cite our paper.
 https://www.biorxiv.org/content/10.1101/2024.08.14.607669v1
